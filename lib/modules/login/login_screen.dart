@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swe463_project/modules/register/register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -13,9 +14,12 @@ class LoginScreen extends StatelessWidget {
         padding: EdgeInsets.all(8),
         child: ListView(
           children: [
-            Image(
-              image: AssetImage("assets/pictures/app_logo.png"),
-              height: 200,
+            Hero(
+              tag: "app_icon",
+              child: Image(
+                image: AssetImage("assets/pictures/app_logo.png"),
+                height: 200,
+              ),
             ),
             TextFormField(
               decoration: InputDecoration(
@@ -64,7 +68,11 @@ class LoginScreen extends StatelessWidget {
               children: [
                 Text("Don't have an account? "),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const RegisterScreen()));
+                  },
                   child: Text("Register now!"),
                 ),
               ],
