@@ -39,18 +39,17 @@ class LoginScreen extends StatelessWidget {
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if(value == null || value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return "Please enter an email address";
                       }
 
-                      final bool validInput =
-                      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                      final bool validInput = RegExp(
+                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                           .hasMatch(value!);
 
-                      if(validInput) {
+                      if (validInput) {
                         return null;
-                      }
-                      else {
+                      } else {
                         return "Please enter a valid email address";
                       }
                     },
@@ -74,10 +73,9 @@ class LoginScreen extends StatelessWidget {
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: true,
                     validator: (value) {
-                      if(value == null || value.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return "Please enter a password";
-                      }
-                      else if(value.length < 6) {
+                      } else if (value.length < 6) {
                         return "Please enter a password of at least 6 characters";
                       }
                     },
@@ -94,9 +92,10 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () async {
                         bool goodInput = formKey.currentState!.validate();
 
-                        if(goodInput) {
+                        if (goodInput) {
                           formKey.currentState!.save();
-                          await NetworkFunctions.login(emailAddress!, password!);
+                          await NetworkFunctions.login(
+                              emailAddress!, password!);
                         }
                       },
                       color: Colors.black,
@@ -116,9 +115,12 @@ class LoginScreen extends StatelessWidget {
                 Text("Don't have an account? "),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegisterScreen()));
+                    Navigator.pushNamed(context, '/register');
+                    //
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => const RegisterScreen()));
                   },
                   child: Text("Register now!"),
                 ),
@@ -144,6 +146,8 @@ class LoginScreen extends StatelessWidget {
                   child: MaterialButton(
                     onPressed: () {
                       print("sign in google");
+                      //TODO: check if the user is logged then
+                      // Navigator.pushReplacementNamed(context, '/home');
                     },
                     color: Colors.black,
                     child: Row(
