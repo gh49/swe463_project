@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:swe463_project/firebase_options.dart';
+import 'package:swe463_project/modules/cart/cart_screen.dart';
 import 'modules/login/login_screen.dart';
 import 'modules/register/register_screen.dart';
 import 'modules/home/home_screen.dart'; // Assuming you have a separate file for HomeScreen
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
         '/home': (context) => HomeScreen(),
+        '/cart': (context) => const CartPage(),
         // Add more routes as needed
       },
     );
