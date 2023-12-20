@@ -1,3 +1,5 @@
+//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class NetworkFunctions {
@@ -22,24 +24,35 @@ class NetworkFunctions {
     }
   }
 
-  static Future<bool> register(String name, bool gender, String email, String password) async {
+  static Future<bool> register(String name, String gender, String email, String password) async {
     late UserCredential credential;
 
     try{
-      credential = await
+      UserCredential credential = await
       FirebaseAuth.instance.
       createUserWithEmailAndPassword(email: email, password: password);
+
+      if(credential.user == null) {
+        print("error: user not created");
+        return false;
+      }
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      CollectionReference users = firestore.collection('users');
+
+      users.doc(credential.user!.uid).set({
+        "name": name,
+        "gender": gender,
+      }).then((value) => null).catchError((error) {
+        print(error.toString());
+      });
+
     }
     catch(error) {
       print(error.toString());
       return false;
     }
 
-    if(credential.user == null) {
-      return false;
-    }
-    else {
       return true;
-    }
   }
 }
