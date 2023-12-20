@@ -1,13 +1,43 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swe463_project/modules/register/register_screen.dart';
 import 'package:swe463_project/shared/networking.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   var formKey = GlobalKey<FormState>();
+
   String? emailAddress;
+
   String? password;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkLoggedIn();
+  }
+
+  Future<void> checkLoggedIn() async {
+    await Future.delayed(Duration(seconds: 1));
+    if(FirebaseAuth.instance.currentUser != null) {
+      Navigator.pushNamed(context, '/home');
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +126,8 @@ class LoginScreen extends StatelessWidget {
                           formKey.currentState!.save();
                           await NetworkFunctions.login(
                               emailAddress!, password!);
+                          if(FirebaseAuth.instance.currentUser != null)
+                            Navigator.pushNamed(context, '/home');
                         }
                       },
                       color: Colors.black,

@@ -303,8 +303,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.logout),
+          onPressed: () {
+            NetworkFunctions.logout();
+            Navigator.pushNamed(context, '/');
+            },
         ),
         title: Text('Clothing App'),
         actions: <Widget>[

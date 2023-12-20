@@ -5,6 +5,10 @@ import '../modules/product/product.dart';
 
 class NetworkFunctions {
 
+  static void logout() {
+    FirebaseAuth.instance.signOut();
+  }
+
   static Future<bool> login(String email, String password) async {
     late UserCredential credential;
 
