@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _products = generateSampleProducts(); // Initialize with sample products
-    // _fetchProducts();
+    _fetchProducts();
   }
 
   Future<void> _fetchProducts() async {
