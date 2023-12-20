@@ -196,7 +196,10 @@
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:swe463_project/modules/favorites/favorites_screen.dart';
 import 'package:swe463_project/modules/product/product.dart';
+import 'package:swe463_project/modules/profile/profile_screen.dart';
+import 'package:swe463_project/shared/networking.dart';
 import '../product/product_details_page.dart';
 
 // Global cart items list
@@ -210,13 +213,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late List<Product> _products = [];
-  final Set<String> _likedProducts = Set<String>();
+  List<Product> _likedProducts = [];
+  int screenIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _products = generateSampleProducts(); // Initialize with sample products
     _fetchProducts();
+    _fetchLikedProducts();
+  }
+
+  Future<void> _fetchLikedProducts() async {
+    _likedProducts = await NetworkFunctions.getLikedProducts();
   }
 
   Future<void> _fetchProducts() async {
@@ -233,24 +242,29 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void addToLiked(String productId) async {
+  void toggleLiked(Product product) async {
+    await NetworkFunctions.toggleLiked(product);
+    await _fetchLikedProducts();
     setState(() {
-      if (_likedProducts.contains(productId)) {
-        _likedProducts.remove(productId);
-      } else {
-        _likedProducts.add(productId);
-      }
+
     });
-    await _firestore
-        .collection('products')
-        .doc(productId)
-        .update({'liked': _likedProducts.contains(productId)});
+  }
+
+  bool isLiked(String productId) {
+    for(Product liked in _likedProducts) {
+      if(liked.id == productId) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // Method to add product to cart
   void addToCart(Product product) {
     setState(() {
-      globalCartItems.add(product);
+      //globalCartItems.add(product);
+      NetworkFunctions.addToCart(product);
     });
   }
 
@@ -292,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Product Page'),
+        title: Text('Clothing App'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.shopping_cart),
@@ -303,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // ... Other actions if needed ...
         ],
       ),
-      body: GridView.builder(
+      body: screenIndex == 0 ? GridView.builder(
         padding: EdgeInsets.all(4),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -352,13 +366,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 2,
                   child: IconButton(
                     icon: Icon(
-                      _likedProducts.contains(product.id)
+                      isLiked(product.id)
                           ? Icons.favorite
                           : Icons.favorite_border,
                       color: Colors.grey,
                     ),
                     onPressed: () {
-                      addToLiked(product.id);
+                      toggleLiked(product);
                     },
                   ),
                 ),
@@ -377,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
-      ),
+      ) : screenIndex == 1 ? FavoritesScreen() : ProfileScreen(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -393,13 +407,19 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Profile',
           ),
         ],
+        currentIndex: screenIndex,
         onTap: (index) {
           // Handle navigation tap
-          if (index == 1) {
-            Navigator.pushNamed(context, '/favorites');
-          } else if (index == 2) {
-            Navigator.pushNamed(context, '/profile');
-          }
+          screenIndex = index;
+          print("index");
+          setState(() {
+
+          });
+          // if (index == 1) {
+          //   Navigator.pushNamed(context, '/favorites');
+          // } else if (index == 2) {
+          //   Navigator.pushNamed(context, '/profile');
+          // }
         },
       ),
     );

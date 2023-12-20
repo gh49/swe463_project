@@ -1,42 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:swe463_project/modules/product/product.dart'; // Import your Product model
+import 'package:swe463_project/modules/product/product.dart';
+import 'package:swe463_project/shared/networking.dart'; // Import your Product model
 
 class ProductDetailsPage extends StatelessWidget {
   final Product product;
 
   ProductDetailsPage({required this.product});
-  Future<void> addToCart(Product product) async {
-    String userId =
-        FirebaseAuth.instance.currentUser!.uid; // Get current user's ID
-    DocumentReference cartRef =
-        FirebaseFirestore.instance.collection('carts').doc(userId);
-
-    try {
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(cartRef);
-
-        if (!snapshot.exists) {
-          // If the cart doesn't exist, create a new cart document
-          transaction.set(cartRef, {
-            'products': [product.id] // Start with the current product
-          });
-        } else {
-          // If the cart exists, update the products array
-          List<dynamic> products = snapshot.get('products');
-          if (!products.contains(product.id)) {
-            products.add(product.id);
-            transaction.update(cartRef, {'products': products});
-          }
-          // If product already exists in cart, no action is taken.
-        }
-      });
-    } catch (e) {
-      print('Error adding product to cart: $e');
-      // Handle errors (e.g., show a snackbar with the error message)
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +56,7 @@ class ProductDetailsPage extends StatelessWidget {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        addToCart(product);
+                        NetworkFunctions.addToCart(product);
                         Navigator.pop(context);
                       },
                       child: Padding(
