@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:swe463_project/modules/home/home_screen.dart';
 import 'package:swe463_project/modules/product/product.dart';
+import 'package:swe463_project/shared/networking.dart';
 
 // Assuming this uses the same Product class as in the HomeScreen
 // and globalCartItems is the global variable for cart items
@@ -14,8 +16,29 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   // Calculate the total price of items in the cart
-  double get totalPrice =>
-      globalCartItems.fold(0, (sum, item) => sum + item.price);
+  double totalPrice = 0;
+
+  List<Product> products = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
+
+  }
+
+  Future<void> _fetchProducts() async {
+    try {
+      var _firestore = FirebaseFirestore.instance;
+      var snapshot = await _firestore.collection('products').get();
+      products = await NetworkFunctions.getCart();
+      setState(() {
+        totalPrice = products.fold(0, (sum, item) => sum + item.price);
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +58,9 @@ class _CartPageState extends State<CartPage> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
-        itemCount: globalCartItems.length,
+        itemCount: products.length,
         itemBuilder: (context, index) {
-          final item = globalCartItems[index];
+          final item = products[index];
           return Stack(
             alignment: Alignment.topRight,
             children: [
@@ -107,6 +130,7 @@ class _CartPageState extends State<CartPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // Handle the checkout action
+          NetworkFunctions.getCart();
         },
         label: Text('Checkout (\$${totalPrice.toStringAsFixed(2)})'),
         icon: Icon(Icons.shopping_cart_checkout),

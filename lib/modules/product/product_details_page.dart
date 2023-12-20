@@ -86,6 +86,7 @@ class ProductDetailsPage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         addToCart(product);
+                        Navigator.pop(context);
                       },
                       child: Padding(
                         padding:
